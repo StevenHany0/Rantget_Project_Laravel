@@ -1,0 +1,88 @@
+/* تحسين الشكل العام للصفحة */
+
+body {
+    background: url('https://cdn.pixabay.com/photo/2019/10/27/18/48/skyline-4582510_1280.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+.main-content {
+    min-height: 100vh;
+    width: 100%;
+    margin-left: 260px; /* يضمن أن يكون بجانب الـ sidebar */
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.50);
+    box-shadow: none; /* إزالة التأثير الذي يجعله يبدو كأنه داخل صندوق */
+    border-radius: 0; /* إزالة الحواف الدائرية */
+}
+
+/* تحسين الـ sidebar وتنسيق النصوص داخله */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: #1e1e1e;
+    padding: 15px;
+    color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.sidebar-menu li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* تحسين الخلفية وجعلها أكثر وضوحًا */
+
+/* تحسين شكل الخلفية */
+body {
+    background: url('https://cdn.pixabay.com/photo/2019/10/27/18/48/skyline-4582510_1280.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* تحسين مظهر الفورم */
+.card {
+    background: rgba(179, 158, 131, 0.20); /* تقليل الشفافية */
+    border-radius: 12px; /* جعل الحواف دائرية أكثر */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* إضافة ظل خفيف */
+}
+
+/* تحسين إدخال البيانات */
+.form-control {
+    border-radius: 8px; /* جعل الحواف دائرية أكثر */
+    padding: 10px;
+}
+
+/* تحسين زر تسجيل الدخول */
+.btn-primary {
+    background-color: #0056b3; /* لون أزرق أكثر احترافية */
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #004099;
+    transform: scale(1.05);
+}
+
+/* تحسين رابط التسجيل */
+.btn-outline-secondary {
+    border-radius: 8px;
+    padding: 10px;
+}
+

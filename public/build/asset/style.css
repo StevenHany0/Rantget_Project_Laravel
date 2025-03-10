@@ -1,0 +1,19 @@
+/* Sidebar Styles */
+#sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hide sidebar by default on small screens */
+@media (max-width: 767.98px) {
+    #sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    #sidebar.active {
+        transform: translateX(0);
+    }
+}
