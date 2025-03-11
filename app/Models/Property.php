@@ -61,10 +61,12 @@ class Property extends Model
     // }
 
 
-    public function tenants()
-    {
-        return $this->users()->wherePivot('role', 'tenant');
-    }
+    // public function tenants()
+    // {
+    //     return $this->belongsToMany(User::class, 'property_user', 'property_id', 'user_id')
+    //                 ->wherePivot('role', 'tenant');
+    // }
+
 // public function landlords()
 // {
 //     return $this->belongsToMany(User::class, 'property_user', 'property_id', 'user_id')
@@ -77,10 +79,24 @@ public function contracts()
     return $this->hasMany(Contract::class, 'property_id');
 }
 
+public function rentals()
+{
+    return $this->hasMany(Contract::class, 'property_id');
+}
+
+
 public function landlords()
 {
-    return $this->users()->wherePivot('role', 'landlord');
+    return $this->belongsToMany(User::class, 'property_user')
+                ->wherePivot('role', 'landlord');
 }
+
+public function tenants()
+{
+    return $this->belongsToMany(User::class, 'property_user')
+                ->wherePivot('role', 'tenant');
+}
+
 
 
 

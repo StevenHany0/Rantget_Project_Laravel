@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -14,74 +13,77 @@ class RenterController extends Controller
 {
     public function index()
     {
-        $renter = Auth::user();
+        $user = auth()->user(); // المستخدم الحالي
 
-        $rentedproperties = Property::whereHas('contracts', function ($query) use ($renter) {
-            $query->where('tenant_id', $renter->id);
+        // جلب العقارات التي قام المستخدم بتأجيرها للآخرين
+        $rentedProperties = Property::whereHas('rentals', function ($query) use ($user) {
+            $query->where('landlord_id', $user->id); // فقط العقارات التي يملكها المستخدم
         })->get();
 
-        return view('dashboard.renter', compact('rentedproperties'));
+        return view('dashboard.renter', compact('rentedProperties'));
     }
 
-    public function show()
+
+
+    public function rentedProperties()
     {
         $renter = auth()->user();
-    
+
         // جلب جميع العقارات التي قام المستخدم الحالي باستئجارها
-        $rentedproperties = Property::whereHas('contracts', function ($query) use ($renter) {
-            $query->where('tenant_id', $renter->id);
+        $rentedProperties = Property::whereHas('contracts', function ($query) use ($renter) {
+            $query->where('tenant_id',auth()->id());
         })->get();
-    
-        if ($rentedproperties->isEmpty()) {
+
+        if ($rentedProperties->isEmpty()) {
             return redirect()->route('dashboard.renter')->with('error', 'لا يوجد عقارات مستأجرة.');
         }
-    
+
         $contracts = [];
         $landlords = [];
         $months = [];
-    
-        foreach ($rentedproperties as $property) {
+
+        foreach ($rentedProperties as $property) {
             // جلب العقد للمستخدم الحالي
             $contract = Contract::where('property_id', $property->id)
                                 ->where('tenant_id', auth()->id())
-                                ->first();
-    
+                                ;
+
             if (!$contract) {
                 return redirect()->route('dashboard.renter')->with('error', 'لا يوجد عقد لهذا العقار.');
             }
-    
+
             $landlords[$property->id] = $property->landlord;
             $contracts[$property->id] = $contract;
-    
+
             // حساب الأشهر لكل عقد
             $startDate = Carbon::parse($contract->start_date)->startOfMonth();
             $endDate = Carbon::parse($contract->end_date)->endOfMonth();
             $currentDate = Carbon::now()->startOfMonth();
-    
+
             $payments = Payment::where('contract_id', $contract->id)
                             ->pluck('payment_date')
                             ->map(fn($date) => Carbon::parse($date)->format('Y-m'));
-    
+
             while ($startDate->lte($endDate)) {
                 $monthKey = $startDate->format('Y-m');
                 $monthName = $startDate->translatedFormat('F Y');
-    
+
                 $status = $payments->contains($monthKey) ? 'paid' : ($startDate->lt($currentDate) ? 'late' : 'unpaid');
-    
+
                 $months[$property->id][] = [
                     'number' => $startDate->month,
                     'year' => $startDate->year,
                     'name' => $monthName,
                     'status' => $status
                 ];
-    
+
                 $startDate->addMonth();
             }
         }
-    
-        return view('dashboard.rented-properties', compact('rentedproperties', 'contracts', 'landlords', 'months'));
+
+        return view('dashboard.rented-properties', compact('rentedProperties', 'contracts', 'landlords', 'months'));
     }
-    
+
 
     public function rentProperty($propertyId)
     {
@@ -129,14 +131,16 @@ class RenterController extends Controller
     {
         $landlord = auth()->user();
 
+        // جلب المستأجرين الذين لديهم عقود إيجار مع المالك الحالي فقط
         $tenants = User::whereHas('contracts', function ($query) use ($landlord) {
             $query->whereHas('property', function ($q) use ($landlord) {
                 $q->where('landlord_id', $landlord->id);
             });
-        })->get();
+        })->distinct()->get();
 
-        return view('landlord.tenants', compact('tenants'));
+        return view('dashboard.renter', compact('tenants'));
     }
+
 
     public function showMonths($contractId)
 {
@@ -178,4 +182,18 @@ class RenterController extends Controller
     dd($months);
 
     return view('dashboard.months', compact('contract', 'months'));
-}}
+}
+
+// public function show()
+// {
+//     $rentedproperties = Property::whereHas('contracts', function ($query) {
+//         $query->where('tenant_id', auth()->id());
+//     })->get();
+
+//     return view('dashboard.rented-properties', compact('rentedproperties'));
+// }
+
+
+
+
+}

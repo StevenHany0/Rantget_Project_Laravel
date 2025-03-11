@@ -26,5 +26,18 @@ public function index()
     return view('dashboard.landlord', compact('properties'));
 }
 
+public function getTenants()
+{
+    $landlord = auth()->user();
+
+    $renters = User::whereHas('tenantContracts', function ($query) use ($landlord) {
+        $query->whereHas('property', function ($q) use ($landlord) {
+            $q->where('landlord_id', $landlord->id);
+        });
+    })->get();
+
+    return view('dashboard.landlord', compact('renters'));
+}
+
 
 }

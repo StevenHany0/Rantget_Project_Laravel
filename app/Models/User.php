@@ -94,17 +94,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Contract::class, 'landlord_id');
     }
+    public function rentedProperties()
+{
+    return $this->belongsToMany(Property::class, 'contracts', 'tenant_id', 'property_id');
+}
+
 
     public function tenantContracts()
     {
         return $this->hasMany(Contract::class, 'tenant_id');
     }
 // في موديل User
-public function rentedProperties()
-{
-    return $this->belongsToMany(Property::class, 'property_user', 'user_id', 'property_id')
-                ->wherePivot('role', 'tenant');
-}
+// public function rentedProperties()
+// {
+//     return $this->belongsToMany(Property::class, 'property_user', 'user_id', 'property_id')
+//                 ->wherePivot('role', 'tenant');
+// }
 
 
 

@@ -83,6 +83,9 @@ Route::get('/payments/details/{month}', [PaymentsController::class, 'showPayment
 Route::get('/properties/{property}', [PropertiesController::class, 'show'])->name('properties.show');
 
 
+// use App\Http\Controllers\RenterController;
+
+Route::get('/dashboard/renter', [RenterController::class, 'rentedProperties'])->name('dashboard.renter');
 
 // Route::resource('histories', HistoriesController::class)->only(['index']);
 Route::get('/payments/history', [PaymentsController::class, 'history'])->name('payments.history');
