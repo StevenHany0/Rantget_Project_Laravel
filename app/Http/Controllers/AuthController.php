@@ -12,6 +12,9 @@ class AuthController extends Controller
     // Show the unified login/register page
     public function showAuthForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard'); // Redirect to dashboard if logged in
+        }
         return view('auth.login');
     }
 
@@ -30,12 +33,18 @@ class AuthController extends Controller
             // dd(Auth::user());
 
             // Redirect based on role
-            if ($user->role === 'landlord') {
-                return redirect()->route('landlord.dashboard');
-            } elseif ($user->role === 'tenant') {
-                return redirect()->route('renter.dashboard');
-            }
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
 
+                if ($user->role === 'admin') {
+                    return redirect()->route('admin.dashboard');
+                } elseif ($user->role === 'landlord') {
+                    return redirect()->route('landlord.dashboard');
+                } elseif ($user->role === 'renter') {
+                    return redirect()->route('renter.dashboard');
+                }
+                return redirect()->route('dashboard'); // Default fallback
+            }
 
             return redirect()->route('dashboard');
         }
@@ -84,9 +93,9 @@ class AuthController extends Controller
         if ($user->is_admin) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'landlord') {
-            return redirect()->route('dashboard.landlord');
-        } else {
-            return redirect()->route('dashboard.renter');
+            return redirect()->route('landlord.dashboard');
+        } elseif ($user->role === 'tenant') {
+            return redirect()->route('renter.dashboard');
         }
     }
 
@@ -98,7 +107,7 @@ class AuthController extends Controller
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/auth'); // Make sure /auth is a valid route
+    return redirect('/auth.login'); // Make sure /auth is a valid route
 }
 
 public function landlordDashboard()

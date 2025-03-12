@@ -5,9 +5,9 @@
         </h4>
         <ul class="sidebar-menu">
 
-            @if(auth()->user()->role == 'landlord')
+            @if(auth()->user()->role === 'landlord')
                 <li>
-                    <a href="{{ route('dashboard.landlord') }}">
+                    <a href="{{ route('landlord.dashboard') }}">
                         <i class="fas fa-home"></i> Home
                     </a>
 
@@ -31,9 +31,9 @@
                     </li>
                 @endif
 
-            @elseif(auth()->user()->role == 'tenant') {{-- تأكد من أن role هو "tenant" في قاعدة البيانات --}}
+            @elseif(auth()->user()->role === 'tenant') {{-- تأكد من أن role هو "tenant" في قاعدة البيانات --}}
                 <li>
-                    <a href="{{ route('dashboard.renter') }}">
+                    <a href="{{ route('renter.dashboard') }}">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
