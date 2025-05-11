@@ -21,6 +21,6 @@ class AuthMiddleware // ✅ Rename to avoid conflicts with the built-in Laravel 
         // Store a session alert message
         session()->flash('alert', 'You are not logged in.');
 
-        return redirect()->route('auth.signin'); // Ensure this route exists
+        return redirect()->route('auth.login'); // Ensure this route exists
     }
 }

@@ -13,12 +13,12 @@
 
                 </li>
                 <li>
-                    <a href="{{ route('contracts.index') }}">
+                    <a href="{{ route('landlord.contracts.index') }}">
                         <i class="fas fa-users"></i> Renters
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('histories.index') }}">
+                    <a href="{{ route('landlord.histories.index') }}">
                         <i class="fas fa-history"></i> History
                     </a>
                 </li>
@@ -49,6 +49,7 @@
                     @csrf
                     <button type="submit" class="btn btn-danger btn-block">
                         <i class="fas fa-sign-out-alt"></i> Logout
+                        {{-- @dd($request); --}}
                     </button>
                 </form>
             </li>

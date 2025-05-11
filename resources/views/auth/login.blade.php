@@ -6,7 +6,7 @@
         <h2 class="text-center mb-4">Login</h2>
 
         <!-- Login Form -->
-        <form action="{{ route('auth.login') }}" method="POST">
+        <form action="{{ route('login.submit') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label class="form-label fw-bold">Email:</label>

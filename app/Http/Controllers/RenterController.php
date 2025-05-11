@@ -35,7 +35,7 @@ class RenterController extends Controller
         })->get();
 
         if ($rentedProperties->isEmpty()) {
-            return redirect()->route('dashboard.renter')->with('error', 'لا يوجد عقارات مستأجرة.');
+            return redirect()->route('renter.dashboard')->with('error', 'لا يوجد عقارات مستأجرة.');
         }
 
         $contracts = [];
@@ -49,7 +49,7 @@ class RenterController extends Controller
                                 ;
 
             if (!$contract) {
-                return redirect()->route('dashboard.renter')->with('error', 'لا يوجد عقد لهذا العقار.');
+                return redirect()->route('renter.dashboard')->with('error', 'لا يوجد عقد لهذا العقار.');
             }
 
             $landlords[$property->id] = $property->landlord;

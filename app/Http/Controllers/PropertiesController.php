@@ -48,7 +48,7 @@ class PropertiesController extends Controller
         // تعيين المالك للعقار
         $property->users()->attach(Auth::id(), ['role' => 'landlord']);
 
-        return redirect()->route('properties.index')->with('success', 'تمت إضافة العقار بنجاح!');
+        return redirect()->route('landlord.properties.index')->with('success', 'تمت إضافة العقار بنجاح!');
     }
 
 
@@ -91,7 +91,7 @@ class PropertiesController extends Controller
 
         $property->update($validatedData);
 
-        return redirect()->route('properties.show', $property->id);
+        return redirect()->route('landlord.properties.show', $property->id);
     }
 
     public function destroy(Property $property)
@@ -102,6 +102,6 @@ class PropertiesController extends Controller
 
         $property->delete();
 
-        return redirect()->route('properties.index')->with('success', 'تم حذف العقار بنجاح.');
+        return redirect()->route('landlord.properties.index')->with('success', 'تم حذف العقار بنجاح.');
     }
 }

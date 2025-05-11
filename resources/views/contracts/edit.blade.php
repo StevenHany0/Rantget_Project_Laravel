@@ -11,10 +11,10 @@
         @endif
 
         <div class="mb-3">
-            <a href="{{ route('contracts.index') }}" class="btn btn-secondary">Back to Contracts</a>
+            <a href="{{ route('landlord.contracts.index') }}" class="btn btn-secondary">Back to Contracts</a>
         </div>
 
-        <form action="{{ route('contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('landlord.contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -28,7 +28,7 @@
 
         </div>
 
-            
+
             <div class="mb-3">
                 <label for="landlord_id" class="form-label">Landlord</label>
                 <select name="landlord_id" id="landlord_id" class="form-control" required>

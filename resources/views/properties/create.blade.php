@@ -7,7 +7,7 @@
 <h2 class="text-center mb-4">Add New Property</h2>
 
     <div class="card shadow-lg p-4">
-        <form action="{{ route('properties.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('landlord.properties.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <!-- تخزين معرف المستخدم بشكل مخفي -->

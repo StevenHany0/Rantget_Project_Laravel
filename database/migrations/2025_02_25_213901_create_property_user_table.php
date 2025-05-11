@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('property_user', function (Blueprint $table) {
-            // $table->id();
-            $table->foreignId('property_id')->constrained()->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // ✅ استبدل landlord_id بـ user_id
             $table->enum('role', ['landlord', 'tenant']); // ✅ لمعرفة دور المستخدم في العقار
             $table->primary(['property_id','user_id']); // في حال كنت تريد مفتاح مركب

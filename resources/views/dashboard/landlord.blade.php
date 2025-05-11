@@ -34,7 +34,7 @@
     @endif
 
     <div class="d-flex gap-3 mt-5 mb-3 justify-content-center">
-        <a href="{{ route('properties.create') }}" class="btn btn-primary">Create New Property</a>
+        <a href="{{ route('landlord.properties.create') }}" class="btn btn-primary">Create New Property</a>
     </div>
     @else
         <p class="text-danger">You must be logged in to view this page.</p>

@@ -21,15 +21,15 @@
     </div>
 
     <div class="d-flex gap-3 mt-3">
-        <a href="{{ route('dashboard.landlord', ['id' => Auth::id()]) }}">
+        <a href="{{ route('landlord.dashboard', ['id' => Auth::id()]) }}">
         @if($property->status != 'rent')
-            <a href="{{ route('properties.edit', $property->id) }}" class="btn btn-warning">Edit</a>
+            <a href="{{ route('landlord.properties.edit', $property->id) }}" class="btn btn-warning">Edit</a>
         @else
             <button class="btn btn-warning" disabled>Edit</button>
         @endif
 
         @if($property->status === 'available')
-        <a href="{{ route('contracts.create', ['property' => $property->id]) }}" class="btn btn-primary">
+        <a href="{{ route('landlord.contracts.create', ['property' => $property->id]) }}" class="btn btn-primary">
             إنشاء عقد لهذا العقار
         </a>
                 @elseif($property->status == 'reserved')

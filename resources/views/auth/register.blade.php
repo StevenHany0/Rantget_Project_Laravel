@@ -15,7 +15,7 @@
 
         <!-- Back to Users Link -->
         <div class="mb-3">
-            <a href="{{ route('auth.login') }}" class="btn btn-secondary">Back</a>
+            <a href="{{ route('login') }}" class="btn btn-secondary">Back</a>
         </div>
 
         <!-- Form -->

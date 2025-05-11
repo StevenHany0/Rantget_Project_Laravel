@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -15,13 +14,14 @@ class User extends Authenticatable
         'id_identify',
         'fullname',
         'email',
+        'email_verified_at',
         'password',
         'age',
         'phone',
         'image',
         'role',
         'id_identify_image',
-        'is_admin' // ✅ تأكدي أنه موجود في قاعدة البيانات
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -32,40 +32,31 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_admin' => 'boolean', // ✅ تأكدي أن is_admin يتم التعامل معه كبوليان
+        'is_admin' => 'boolean',
     ];
 
-    /**
-     * التحقق مما إذا كان المستخدم هو الـ Super Admin
-     */
+    // التحقق مما إذا كان المستخدم هو Super Admin
     public function isSuperAdmin()
     {
         return $this->is_admin && $this->email === 'admin@gmail.com';
     }
 
-    /**
-     * التحقق مما إذا كان المستخدم Admin
-     */
+    // التحقق مما إذا كان المستخدم Admin
     public function isAdmin()
     {
-        return $this->is_admin; // ✅ سيعمل الآن بدون مشاكل
+        return $this->is_admin;
     }
 
-    /**
-     * علاقة Many-to-Many مع Property
-     */
-
-    // ✅ العقارات التي يملكها المستخدم (كمالك)
+    // العقارات التي يملكها المستخدم (كمالك)
     public function ownedProperties()
     {
         return $this->belongsToMany(Property::class, 'property_user')
-                    ->wherePivot('role', 'landlord'); // تحقق من استخدام wherePivot إذا كنت تريد جلب بيانات محددة
+                    ->withPivot('role')
+                    ->wherePivot('role', 'landlord')
+                    ->withTimestamps();
     }
 
-
-
-    // ✅ عدد الشقق التي قام المالك بتأجيرها
-
+    // جميع العقارات المرتبطة بالمستخدم مع الدور (مالك أو مستأجر)
     public function properties()
     {
         return $this->belongsToMany(Property::class, 'property_user')
@@ -73,49 +64,33 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
-    // public function ownedProperties()
-    // {
-    //     return $this->properties()->wherePivot('role', 'landlord');
-    // }
-
-
-
-    // سكوب لجلب المستأجرين بسهولة
+    // سكوب لجلب المستأجرين
     public function scopeTenants($query)
     {
         return $query->where('role', 'tenant');
     }
+
+    // سكوب لجلب الملاك
     public function scopeLandlords($query)
     {
         return $query->where('role', 'landlord');
     }
 
+    // العقود التي يملكها المستخدم كمالك
     public function contracts()
     {
         return $this->hasMany(Contract::class, 'landlord_id');
     }
-    public function rentedProperties()
-{
-    return $this->belongsToMany(Property::class, 'contracts', 'tenant_id', 'property_id');
-}
 
-
+    // العقود التي اشترك بها كمستأجر
     public function tenantContracts()
     {
         return $this->hasMany(Contract::class, 'tenant_id');
     }
-// في موديل User
-// public function rentedProperties()
-// {
-//     return $this->belongsToMany(Property::class, 'property_user', 'user_id', 'property_id')
-//                 ->wherePivot('role', 'tenant');
-// }
 
-
-
+    // العقارات التي استأجرها المستخدم
+    public function rentedProperties()
+    {
+        return $this->belongsToMany(Property::class, 'contracts', 'tenant_id', 'property_id');
+    }
 }
-
-
-
-
-

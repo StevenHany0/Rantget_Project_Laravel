@@ -8,7 +8,7 @@
 <h2 class="text-center">Edit Property</h2>
 <div class="card shadow-lg p-4">
 
-    <form action="{{ route('properties.update', $property->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('landlord.properties.update', $property->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 

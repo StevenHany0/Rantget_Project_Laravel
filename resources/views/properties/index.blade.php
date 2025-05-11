@@ -12,7 +12,7 @@
         @endif
 
         <div class="mb-3">
-            <a href="{{ route('properties.create') }}" class="btn btn-primary">Create New Property</a>
+            <a href="{{ route('landlord.properties.create') }}" class="btn btn-primary">Create New Property</a>
         </div>
 
         <table class="table table-bordered table-striped">
@@ -47,10 +47,10 @@
                         <td>{{ $property->price }}</td>
                         <td>{{ ucfirst($property->status) }}</td>
                         <td>
-                            <a href="{{ route('properties.show', $property->id) }}" class="btn btn-info btn-sm px-3">👁 View</a>
-                            <a href="{{ route('properties.edit', $property->id) }}" class="btn btn-warning btn-sm px-3">✏ Edit</a>
+                            <a href="{{ route('landlord.properties.show', $property->id) }}" class="btn btn-info btn-sm px-3">👁 View</a>
+                            <a href="{{ route('landlord.properties.edit', $property->id) }}" class="btn btn-warning btn-sm px-3">✏ Edit</a>
 
-                            <form action="{{ route('properties.destroy', $property->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('landlord.properties.destroy', $property->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm px-3"  onclick="return confirm('Are you sure you want to delete this property?')">🗑 Delete</button>

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-5">
-<h1 class="text-center"> {{ $contract->tenant->fullname }}</h1>  
+<h1 class="text-center"> {{ $contract->tenant->fullname }}</h1>
 
     <div class="card">
         <div class="card-body">
@@ -22,9 +22,9 @@
             <p><strong>Penalty Amount:</strong> {{ $contract->penalty_amount }} EGP</p>
 
             <div class="mt-3">
-                <a href="{{ route('contracts.edit', $contract->id) }}" class="btn btn-primary">Edit Contract</a>
+                <a href="{{ route('landlord.contracts.edit', $contract->id) }}" class="btn btn-primary">Edit Contract</a>
 
-                <form action="{{ route('contracts.destroy', $contract->id) }}" method="POST" class="d-inline">
+                <form action="{{ route('landlord.contracts.destroy', $contract->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to terminate this contract?')">Terminate Contract</button>

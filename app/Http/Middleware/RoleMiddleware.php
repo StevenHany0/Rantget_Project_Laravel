@@ -15,7 +15,7 @@ class RoleMiddleware
     {
         // Ensure the user is authenticated
         if (!Auth::check()) {
-            return redirect()->route('login');
+            return redirect()->route('auth.login');
         }
 
         // Check if the user has the required role(s)

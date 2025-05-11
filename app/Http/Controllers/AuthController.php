@@ -101,13 +101,15 @@ class AuthController extends Controller
 
 
     // Handle Logoutac
+
     public function logout(Request $request)
 {
+   
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/auth.login'); // Make sure /auth is a valid route
+    return redirect()->route('login'); // Make sure /auth is a valid route
 }
 
 public function landlordDashboard()

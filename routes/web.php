@@ -19,7 +19,8 @@ Route::get('/', function () {
 
 // 🔹 Authentication Routes
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/auth', 'showAuthForm')->name('auth.login');
+    Route::get('/auth', 'showAuthForm')->name('auth.login'); // الاسم الحالي
+    Route::get('/auth', 'showAuthForm')->name('login');       // 👈 السطر الجديد اللي هيحل المشكلة
     Route::post('/login', 'login')->name('login.submit');
     Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'registerafter')->name('register.submit');
@@ -34,6 +35,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('landlord')->name('landlord.')->group(function () {
         Route::get('/dashboard', [LandlordController::class, 'index'])->name('dashboard');
         Route::resource('/properties', PropertiesController::class);
+        Route::get('/contracts', [ContractsController::class, 'index'])->name('contracts.index');
+        Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
+        Route::resource('contracts', ContractsController::class)->names('contracts');
+
+
     });
 
     // ✅ Renter Routes (Fix Applied)
