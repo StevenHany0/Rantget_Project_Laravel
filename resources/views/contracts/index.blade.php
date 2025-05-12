@@ -1,4 +1,10 @@
 @extends('layout.master')
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 @section('content')
 <div class="container mt-5">
@@ -14,7 +20,7 @@
         @foreach($contracts as $contract)
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="card shadow-sm border-0 text-center" style="max-width: 220px; padding: 15px; border-radius: 12px;">
-                    <a href="{{ route('contracts.show', $contract->id) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('landlord.contracts.show', $contract->id) }}" class="text-decoration-none text-dark">
                         <div class="card-body p-3">
                             <img src="{{ asset('storage/' . $contract->tenant->image) }}"
                                  alt="Tenant Image"
@@ -28,7 +34,7 @@
                     </a>
 
                     <!-- زر عرض المدفوعات -->
-                    <a href="{{ route('payments.months', ['contractId' => $contract->id]) }}" 
+                    <a href="{{ route('landlord.payments.months', ['contractId' => $contract->id]) }}"
                        class="btn btn-warning btn-sm mt-2">
                        <i class="fas fa-eye"></i> عرض المدفوعات
                     </a>

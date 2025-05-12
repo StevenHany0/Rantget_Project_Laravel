@@ -53,7 +53,7 @@ class PaymentsController extends Controller
         $startDate->addMonth();
     }
 
-    return view('payments.months', compact('contract', 'months'));
+    return view('payments.months', compact('contract', 'months',));
 }
 
 

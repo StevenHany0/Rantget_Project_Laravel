@@ -36,8 +36,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [LandlordController::class, 'index'])->name('dashboard');
         Route::resource('/properties', PropertiesController::class);
         Route::get('/contracts', [ContractsController::class, 'index'])->name('contracts.index');
-        Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
+        Route::resource('histories', HistoriesController::class)->names('histories');
         Route::resource('contracts', ContractsController::class)->names('contracts');
+        Route::get('/payments/{contractId}/months', [PaymentsController::class, 'showMonths'])->name('payments.months');
+    Route::get('/payments/{contractId}/{month}/{year}/create', [PaymentsController::class, 'create'])->name('payments.create');
+    Route::post('/payments/store', [PaymentsController::class, 'store'])->name('payments.store');
 
 
     });

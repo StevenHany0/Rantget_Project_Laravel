@@ -15,15 +15,21 @@ class ContractsController extends Controller
         $contracts = Contract::all();
         return view('contracts.index', compact('contracts'));
     }
-    public function create(Property $property)
+    public function create(Request $request)
     {
-        // dd($property); // تحقق مما إذا كان `null` أو يحتوي على بيانات
+        $propertyId = $request->query('property');
+        $property = Property::find($propertyId);
+
+        if (!$property) {
+            return redirect()->route('contracts.index')->with('error', 'Property not found.');
+        }
 
         $landlords = User::where('role', 'landlord')->get();
         $tenants = User::where('role', 'tenant')->get();
 
         return view('contracts.create', compact('property', 'landlords', 'tenants'));
     }
+
 
 
     public function store(Request $request)
@@ -52,7 +58,7 @@ class ContractsController extends Controller
         Contract::create($validatedData);
 
 
-        return redirect()->route('contracts.index')->with('success', 'Contract created successfully.');
+        return redirect()->route('landlord.contracts.index')->with('success', 'Contract created successfully.');
     }
 
     public function show(Contract $contract)

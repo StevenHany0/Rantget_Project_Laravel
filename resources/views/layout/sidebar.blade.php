@@ -25,7 +25,7 @@
 
                 @if(optional(auth()->user()->contracts()->first())->id)
                     <li>
-                        <a href="{{ route('payments.months', ['contractId' => auth()->user()->contracts()->first()->id]) }}">
+                        <a href="{{ route('landlord.payments.months', ['contractId' => auth()->user()->contracts()->first()->id]) }}">
                             <i class="fas fa-money-bill-wave"></i> Payments
                         </a>
                     </li>
