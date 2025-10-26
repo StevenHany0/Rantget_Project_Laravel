@@ -20,7 +20,7 @@ Route::get('/', function () {
 // 🔹 Authentication Routes
 Route::controller(AuthController::class)->group(function () {
     Route::get('/auth', 'showAuthForm')->name('auth.login'); // الاسم الحالي
-    Route::get('/auth', 'showAuthForm')->name('login');       // 👈 السطر الجديد اللي هيحل المشكلة
+    Route::post('/auth', 'showAuthForm')->name('login');       // 👈 السطر الجديد اللي هيحل المشكلة
     Route::post('/login', 'login')->name('login.submit');
     Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'registerafter')->name('register.submit');
