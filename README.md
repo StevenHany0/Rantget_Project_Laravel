@@ -1,66 +1,398 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Rantget Property Rental Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+Rantget is a Laravel-based web application that facilitates property rental transactions between landlords and tenants. It manages the complete rental lifecycle—from property listing and contract creation to monthly payment tracking—while enforcing role-based access control.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This README provides a high-level introduction to the system's purpose, core entities, user roles, architecture, and feature modules.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Purpose & Scope
 
-## Learning Laravel
+The system is designed to:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* Enable landlords to list and manage rental properties.
+* Allow tenants to browse, rent, and pay for properties.
+* Support administrators in overseeing all system operations.
+* Maintain an audit trail for all contract changes.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Rantget supports a **dual-role user model**, allowing a single user to act as both landlord and tenant simultaneously. All contract updates and deletions are logged via the `History` model for compliance and traceability.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Core Domain Entities
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Model    | Primary Key | Purpose                                         | Key Relationships                                               |
+| -------- | ----------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| User     | id          | Represents landlords, tenants, and admins       | Has many contracts, belongs to many properties                  |
+| Property | id          | Real estate assets available for rent           | Belongs to many users (via `property_user`), has many contracts |
+| Contract | id          | Rental agreements linking properties to tenants | Belongs to property, landlord, tenant; has many payments        |
+| Payment  | id          | Monthly payment transactions                    | Belongs to contract; tracked by month and year                  |
+| History  | id          | Audit trail for contract modifications          | Belongs to contract and user; stores JSON snapshots             |
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## User Roles & Capabilities
 
-## Contributing
+### Admin (`is_admin = true`)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* Full access to all system features.
+* Assigned via a boolean `is_admin` column on the User model.
+* Special backdoor: any user registering with `admin@gmail.com` automatically becomes admin.
 
-## Code of Conduct
+### Landlord (`role = 'landlord'`)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Manage property listings.
+* Create and manage rental contracts.
+* View tenants renting their properties.
+* Monitor payment status across contracts.
+* Access audit history.
 
-## Security Vulnerabilities
+Route prefix: `/landlord/*`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Tenant / Renter (`role = 'tenant'` or `'renter'`)
+
+* Browse available properties.
+* Initiate rental contracts.
+* View rented properties and payment status.
+* Submit monthly payments.
+
+Route prefix: `/renter/*`
+
+---
+
+## System Architecture
+
+The application follows Laravel’s **MVC architecture** with four layers:
+
+| Layer          | Components                      | Purpose                                        |
+| -------------- | ------------------------------- | ---------------------------------------------- |
+| Presentation   | Blade templates, views          | Renders HTML for user interaction              |
+| Application    | Controllers, middleware, routes | Handles HTTP requests and business logic       |
+| Domain         | Eloquent models                 | Represents business entities and relationships |
+| Infrastructure | Database, file storage, session | Provides persistence and framework services    |
+
+Key files:
+
+* Routing: `routes/web.php`
+* Controllers: `app/Http/Controllers/*`
+* Models: `app/Models/{User,Property,Contract,Payment,History}.php`
+* Views: `resources/views/*`
+
+---
+
+## Feature Modules
+
+### Property Management
+
+* Full CRUD via `PropertiesController`.
+* Properties support four states: `available`, `unavailable`, `reserved`, `rent`.
+* Properties are linked to landlords via the `property_user` pivot table.
+
+### Contract Management
+
+* Managed via `ContractsController`.
+* Includes:
+
+  * Validation of rental periods.
+  * File upload for contract documents.
+  * Automatic history logging on update and delete.
+  * Conversion of `penalty_amount` from yes/no to boolean.
+
+### Payment Tracking
+
+* Managed via `PaymentsController`.
+* Tracks monthly payments with:
+
+  * Month and year fields.
+  * Amount, payment method, last 4 card digits.
+  * Status (`paid`, `late`, `unpaid`).
+* Automatically computes payment status across contract duration.
+
+---
+
+## Authentication & Authorization
+
+* Uses Laravel’s session-based authentication.
+* Role-based redirection after login based on `is_admin` and `role`.
+* All `/landlord/*` and `/renter/*` routes are protected by `auth` middleware.
+* Public access is allowed for property browsing.
+
+---
+
+## Data Relationships
+
+The `property_user` pivot table enables many-to-many relationships between users and properties, with a `role` column to distinguish landlords and tenants.
+
+### Key Relationships
+
+* User → ownedProperties(): properties where pivot role is `landlord`.
+* User → rentedProperties(): properties via contracts where user is tenant.
+* User → contracts(): contracts where user is landlord.
+* User → tenantContracts(): contracts where user is tenant.
+
+---
+
+## Special Features
+
+### Audit Trail System
+
+All contract updates and deletions are logged to the `History` model, capturing:
+
+* `contract_id`
+* `user_id`
+* `action_type` (`updated` or `deleted`)
+* `old_data` (JSON snapshot)
+* `new_data` (JSON snapshot or null)
+
+### Dual-Role User Model
+
+Users can act as both landlords and tenants, enabled by:
+
+* The `property_user` pivot table with role distinction.
+* Separate foreign keys on `Contract` (`landlord_id`, `tenant_id`).
+* Distinct relationship methods on the User model.
+
+### Admin Backdoor
+
+Any user registering with the email `admin@gmail.com` automatically receives admin privileges (`is_admin = true`).
+
+---
+
+## Request Flow Summary
+
+1. **Route Matching** – Request URL matched in `routes/web.php`.
+2. **Middleware Chain** – `auth` middleware validates session; role middleware checks permissions.
+3. **Controller Dispatch** – Matched controller method executes.
+4. **Model Interaction** – Controller queries/persists via Eloquent models.
+5. **View Rendering** – Data passed to Blade templates.
+6. **Response** – HTML or redirect returned to browser.
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+
+* PHP ^8.2
+* Composer
+* Node.js & npm
+* MySQL or compatible database
+
+### Setup Steps
+
+```bash
+# 1. Clone the repository
+git clone <your-repo-url>
+cd rantget
+
+# 2. Install backend dependencies
+composer install
+
+# 3. Install frontend dependencies
+npm install
+
+# 4. Copy environment file
+cp .env.example .env
+
+# 5. Generate application key
+php artisan key:generate
+
+# 6. Configure database in .env
+DB_DATABASE=your_db_name
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+
+# 7. Run migrations
+php artisan migrate
+
+# 8. (Optional) Seed database
+php artisan db:seed
+
+# 9. Build frontend assets
+npm run build
+
+# 10. Run development server
+php artisan serve
+```
+
+Visit: `http://127.0.0.1:8000`
+
+---
+
+## API Support
+
+> If APIs are enabled, all routes should be protected using `auth:sanctum`.
+
+### Authentication
+
+* `POST /api/login`
+* `POST /api/logout`
+* `POST /api/register`
+
+### Core Resources
+
+* `GET /api/properties`
+* `POST /api/properties`
+* `GET /api/contracts`
+* `POST /api/contracts`
+* `GET /api/payments`
+* `POST /api/payments`
+
+---
+
+## Testing
+
+```bash
+php artisan test
+```
+
+Or using Pest:
+
+```bash
+./vendor/bin/pest
+```
+
+---
+
+## Contribution Guidelines
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m "Add new feature"`.
+4. Push to your branch: `git push origin feature-name`.
+5. Open a Pull Request.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source and available under the **MIT License**.
+
+---
+
+## Additional Documentation (PDFs)
+
+You can find detailed technical documentation in the following PDF files (place them inside a `docs/` folder in your repository):
+
+* 📄 [Authentication & Authorization Flow](docs/Authentication%20and%20Authorization%20Flow.pdf)
+* 📄 [Data Relationships / Database Design](docs/Data%20Relationships.pdf)
+* 📄 [Entity to Code Mapping / MVC Structure](docs/Entity%20to%20code%20mapping.pdf)
+* 📄 [Feature Module Overview / Routing System](docs/Feature%20module%20overview.pdf)
+
+
+---
+
+## Database Schema Overview
+
+### Main Tables
+
+#### `users`
+
+| Column     | Type    | Description                |
+| ---------- | ------- | -------------------------- |
+| id         | bigint  | Primary key                |
+| name       | string  | User full name             |
+| email      | string  | Unique email               |
+| password   | string  | Hashed password            |
+| role       | string  | landlord / tenant / renter |
+| is_admin   | boolean | Admin flag                 |
+| timestamps | —       | Created & updated at       |
+
+#### `properties`
+
+| Column      | Type    | Description                               |
+| ----------- | ------- | ----------------------------------------- |
+| id          | bigint  | Primary key                               |
+| title       | string  | Property title                            |
+| description | text    | Property description                      |
+| address     | string  | Property address                          |
+| status      | string  | available / unavailable / reserved / rent |
+| price       | decimal | Monthly rent                              |
+| timestamps  | —       | Created & updated at                      |
+
+#### `contracts`
+
+| Column         | Type    | Description            |
+| -------------- | ------- | ---------------------- |
+| id             | bigint  | Primary key            |
+| property_id    | bigint  | FK → properties.id     |
+| landlord_id    | bigint  | FK → users.id          |
+| tenant_id      | bigint  | FK → users.id          |
+| start_date     | date    | Contract start         |
+| end_date       | date    | Contract end           |
+| penalty_amount | boolean | Penalty flag           |
+| contract_image | string  | Uploaded document path |
+| timestamps     | —       | Created & updated at   |
+
+#### `payments`
+
+| Column         | Type    | Description          |
+| -------------- | ------- | -------------------- |
+| id             | bigint  | Primary key          |
+| contract_id    | bigint  | FK → contracts.id    |
+| month          | integer | 1–12                 |
+| year           | integer | Year of payment      |
+| amount         | decimal | Payment amount       |
+| method         | string  | Payment method       |
+| card_last_four | string  | Last 4 digits        |
+| status         | string  | paid / late / unpaid |
+| timestamps     | —       | Created & updated at |
+
+#### `histories`
+
+| Column      | Type   | Description          |
+| ----------- | ------ | -------------------- |
+| id          | bigint | Primary key          |
+| contract_id | bigint | FK → contracts.id    |
+| user_id     | bigint | FK → users.id        |
+| action_type | string | updated / deleted    |
+| old_data    | json   | Previous snapshot    |
+| new_data    | json   | New snapshot         |
+| timestamps  | —      | Created & updated at |
+
+#### `property_user` (Pivot Table)
+
+| Column      | Type   | Description        |
+| ----------- | ------ | ------------------ |
+| property_id | bigint | FK → properties.id |
+| user_id     | bigint | FK → users.id      |
+| role        | string | landlord / tenant  |
+
+---
+
+## Entity Relationship Diagram (Textual)
+
+```text
+User (1) ────< owns >──── (∞) Property
+   │                         │
+   │                         │
+   │                         └──── (∞) Contract ────< (∞) Payment
+   │                                     │
+   │                                     │
+   └────< rents >──── (∞) Property <─────┘
+
+User has many Contracts (as landlord)
+User has many Contracts (as tenant)
+Property has many Contracts
+Contract has many Payments
+Contract has many Histories
+```
+
+---
+
+## Validation Rules (Example: Contracts)
+
+```php
+$request->validate([
+    'property_id' => 'required|exists:properties,id',
+    'landlord_id' => 'required|exists:users,id',
+    'tenant_id' => 'required|exists:users,id',
+    'start_date' => 'required|date',
+    'end_date' => 'required|date|after:start_date',
+    'penalty_amount' => 'nullable|boolean',
+    'contract_image' => 'nullable|file|mimes:pdf,jpg,jpeg,png'
+]);
+```
+*Maintained by Steven Hany Elia*
