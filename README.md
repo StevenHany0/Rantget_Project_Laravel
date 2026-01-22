@@ -177,7 +177,6 @@ Any user registering with the email `admin@gmail.com` automatically receives adm
 
 * PHP ^8.2
 * Composer
-* Node.js & npm
 * MySQL or compatible database
 
 ### Setup Steps
@@ -190,30 +189,24 @@ cd rantget
 # 2. Install backend dependencies
 composer install
 
-# 3. Install frontend dependencies
-npm install
-
-# 4. Copy environment file
+# 3. Copy environment file
 cp .env.example .env
 
-# 5. Generate application key
+# 4. Generate application key
 php artisan key:generate
 
-# 6. Configure database in .env
+# 5. Configure database in .env
 DB_DATABASE=your_db_name
 DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
 
-# 7. Run migrations
+# 6. Run migrations
 php artisan migrate
 
-# 8. (Optional) Seed database
+# 7. (Optional) Seed database
 php artisan db:seed
 
-# 9. Build frontend assets
-npm run build
-
-# 10. Run development server
+# 8. Run development server
 php artisan serve
 ```
 
@@ -239,20 +232,6 @@ Visit: `http://127.0.0.1:8000`
 * `POST /api/contracts`
 * `GET /api/payments`
 * `POST /api/payments`
-
----
-
-## Testing
-
-```bash
-php artisan test
-```
-
-Or using Pest:
-
-```bash
-./vendor/bin/pest
-```
 
 ---
 
